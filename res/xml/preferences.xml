@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory android:title="Benutzerdaten">
+		<EditTextPreference 
+			android:key="auth_token" 
+			android:title="Authentifikationstoken"
+			android:summary="In den Benutzereinstellungen zu finden"
+			android:dialogTitle="Authentifikationstoken"
+			/>
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="App-Einstellungen">
+		<EditTextPreference
+			android:key="every_minute" 
+			android:title="Check Intervall"
+		    android:numeric="integer"
+			android:summary="Anzahl an Minuten zwischen zwei Anfragen"
+			android:dialogTitle="Intervall"
+			android:defaultValue="10"
+			/>
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="Host-Daten">
+		<EditTextPreference 
+			android:key="auditorium_host" 
+			android:title="Auditorium Host"
+			android:summary="IP-Adresse oder Hostname"
+			android:dialogTitle="Auditorium Host"
+			android:defaultValue="auditorium.i77i.de"
+			/>
+	</PreferenceCategory>
+</PreferenceScreen>
