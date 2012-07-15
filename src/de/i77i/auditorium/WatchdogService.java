@@ -40,13 +40,12 @@ public class WatchdogService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
+
 		if (checkForNewDataTask != null) {
 			return super.onStartCommand(intent, flags, startId);
 		}
-		
-		Toast.makeText(this, "Auditorium Service started (onStartCommand)",
-				Toast.LENGTH_SHORT).show();
+
+		Toast.makeText(this, "Auditorium Service started", Toast.LENGTH_SHORT).show();
 
 		final String token = intent.getStringExtra("token");
 		final String host = intent.getStringExtra("host");
@@ -73,7 +72,7 @@ public class WatchdogService extends Service {
 				try {
 					int newPosts = 0;
 					int newComments = 0;
-					
+
 					responses = i.getUnreadContent();
 					for (AuditoriumResponse r : responses) {
 						if (r.isNewPost())
@@ -82,26 +81,8 @@ public class WatchdogService extends Service {
 						newComments += r.getComments();
 					}
 
-					String message = "";
-					
-					if (newPosts != 0 && newComments != 0) {
-						message = newPosts + " neue Diskussionen und "
-								+ newComments + " neue Kommentare";
-						
-					} else if (newPosts == 0 && newComments != 0) {
-						if (newComments == 1) {
-							message = newComments + " neuer Kommentar";
-						} else {
-							message = newComments + " neue Kommentare";
-						}
-						
-					} else {
-						if (newPosts == 1) {
-							message = newPosts + " neue Diskussion";
-						} else {
-							message = newPosts + " neue Diskussionen";
-						}
-					}
+					String message = getNotificationMessage(newPosts,
+							newComments);
 
 					Intent notificationIntent = new Intent(Intent.ACTION_VIEW);
 					notificationIntent.setData(Uri.parse("http://" + host));
@@ -163,6 +144,46 @@ public class WatchdogService extends Service {
 								notification);
 					}
 				});
+			}
+
+			/**
+			 * build the notification
+			 * 
+			 * @param newPosts
+			 * @param newComments
+			 * @return
+			 */
+			public String getNotificationMessage(final int newPosts,
+					final int newComments) {
+				String message = "";
+				String postMessage = "";
+				String commentMessage = "";
+
+				if (newComments != 0) {
+					if (newComments == 1) {
+						commentMessage = newComments + " neuer Kommentar";
+					} else {
+						commentMessage = newComments + " neue Kommentare";
+					}
+
+				}
+
+				if (newPosts != 0) {
+					if (newPosts == 1) {
+						postMessage = newPosts + " neue Diskussion";
+					} else {
+						postMessage = newPosts + " neue Diskussionen";
+					}
+				}
+
+				if (newPosts != 0 && newComments != 0)
+					message = postMessage + " und " + commentMessage;
+				else if (newPosts != 0 && newComments == 0)
+					message = postMessage;
+				else if (newPosts == 0 && newComments != 0)
+					message = commentMessage;
+
+				return message;
 			}
 
 			private boolean isOnline() {

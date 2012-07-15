@@ -87,26 +87,21 @@ public class AuditoriumInterface {
 		HttpClient client = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(url);
 
-		//try {
-			HttpResponse response = client.execute(httpGet);
-			StatusLine statusLine = response.getStatusLine();
-			int statusCode = statusLine.getStatusCode();
-			if (statusCode == 200) {
-				HttpEntity entity = response.getEntity();
-				InputStream content = entity.getContent();
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(content));
-				String line;
-				while ((line = reader.readLine()) != null) {
-					builder.append(line);
-				}
-			} else if (statusCode == 404) {
-				throw new HttpNotFoundException();
+		HttpResponse response = client.execute(httpGet);
+		StatusLine statusLine = response.getStatusLine();
+		int statusCode = statusLine.getStatusCode();
+		if (statusCode == 200) {
+			HttpEntity entity = response.getEntity();
+			InputStream content = entity.getContent();
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(content));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
 			}
-		//} catch (Exception e) {
-		//	throw new IOException("Could not get the HTTP Response (" + e.toString() + "): "
-		//			+ e.getMessage());
-		//}
+		} else if (statusCode == 404) {
+			throw new HttpNotFoundException();
+		}
 
 		return builder.toString();
 	}
