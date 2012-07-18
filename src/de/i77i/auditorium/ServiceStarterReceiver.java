@@ -6,22 +6,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-public class ServiceStarter extends BroadcastReceiver {
+public class ServiceStarterReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-		
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+
 		String token = pref.getString("auth_token", "invalid");
-		String host = pref.getString("auditorium_host",
-				"auditorium.i77i.de");
-		int interval = Integer.parseInt(pref.getString("every_minute", "10"));
-		
+		String host = pref.getString("auditorium_host", "auditorium.i77i.de");
+
 		Intent serviceIntent = new Intent(context, WatchdogService.class);
 		serviceIntent.putExtra("host", host);
 		serviceIntent.putExtra("token", token);
-		serviceIntent.putExtra("interval", interval);
-		
+
 		context.startService(serviceIntent);
 
 	}

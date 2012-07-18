@@ -14,22 +14,17 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 public class WatchdogService extends Service {
 
 	private final String TAG = WatchdogService.class.toString();
 	final Handler handler = new Handler();
-	private TimerTask checkForNewDataTask;
-	private Timer timer = new Timer();
 
 	private static final int NOTICICATION_ID = 123456789;
 
@@ -41,21 +36,13 @@ public class WatchdogService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
-		if (checkForNewDataTask != null) {
-			return super.onStartCommand(intent, flags, startId);
-		}
-
-		Toast.makeText(this, "Auditorium Service started", Toast.LENGTH_SHORT).show();
-
 		final String token = intent.getStringExtra("token");
 		final String host = intent.getStringExtra("host");
-		final int interval = intent.getIntExtra("interval", 10);
 
 		Log.d(TAG, "Token: " + token);
 		Log.d(TAG, "Host: " + host);
-		Log.d(TAG, "Interval: " + interval);
 
-		checkForNewDataTask = new TimerTask() {
+		Runnable run = new Runnable() {
 
 			@Override
 			public void run() {
@@ -200,22 +187,8 @@ public class WatchdogService extends Service {
 
 		};
 
-		timer.scheduleAtFixedRate(checkForNewDataTask, 300, interval * 60000);
+		new Thread(run).start();
 
-		return super.onStartCommand(intent, flags, startId);
+		return Service.START_NOT_STICKY;
 	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		checkForNewDataTask.cancel();
-		timer.cancel();
-
-		Toast.makeText(this, "Auditorium Service stopped", Toast.LENGTH_SHORT)
-				.show();
-		Log.d(TAG, "Auditorium Service stopped (OnDestroy)");
-
-	}
-
 }

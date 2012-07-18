@@ -21,18 +21,13 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		printToTextView("\nDie Hauptaufgabe dieser App leistet ein Service im "
-				+ "Hintergrund. Hier wird dieser bloß konfiguriert. Wenn neue " +
-				"Diskussionen und Kommentare existieren erzeugt dieser Service " +
-				"eine Notification.");
+				+ "Hintergrund. Hier wird dieser bloß konfiguriert. Wenn neue "
+				+ "Diskussionen und Kommentare existieren erzeugt dieser Service "
+				+ "eine Notification.");
 
 		if (checkConfig()) {
-			startService();
+			installService();
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
 	}
 
 	@Override
@@ -56,11 +51,9 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == PREFERENCE_ACTIVITY_RESULT) {
-			stopService(new Intent(this, WatchdogService.class));
-
 			if (checkConfig()) {
 				printToTextView("Service wurde neu gestartet");
-				startService();
+				installService();
 			}
 		}
 	}
@@ -76,28 +69,17 @@ public class MainActivity extends Activity {
 			break;
 		}
 	}
-	
-	public void startService() {
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-		
-		String token = pref.getString("auth_token", "invalid");
-		String host = pref.getString("auditorium_host",
-				"auditorium.i77i.de");
-		int interval = Integer.parseInt(pref.getString("every_minute", "10"));
-		
-		Intent intent = new Intent(this, WatchdogService.class);
-		intent.putExtra("host", host);
-		intent.putExtra("token", token);
-		intent.putExtra("interval", interval);
-		
-		startService(intent);
+
+	public void installService() {
+		Intent i = new Intent(this, ServiceSetupReceiver.class);
+		sendBroadcast(i);
 	}
 
 	public boolean checkConfig() {
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		
+
 		String token = prefs.getString("auth_token", "");
 		if (token.equals("")) {
 			printToTextView("\nTODO: Es muss das Authentifizierungstoken konfiguriert werden,"
@@ -106,7 +88,7 @@ public class MainActivity extends Activity {
 		} else {
 			printToTextView("\nAuthentifikationstoken: " + token);
 		}
-		
+
 		String host = prefs.getString("auditorium_host", "");
 		if (token.equals("")) {
 			printToTextView("\nTODO: Es muss ein Auditorium-Host eingetragen werden (IP-Adresse oder Hostname).");

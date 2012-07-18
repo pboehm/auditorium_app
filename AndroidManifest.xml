@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.i77i.auditorium"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -9,25 +9,46 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-<application android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:theme="@style/AppTheme">
+    
+<application 	android:icon="@drawable/ic_launcher" 
+    			android:label="@string/app_name" 
+    			android:theme="@style/AppTheme">
         
         
         <activity android:name=".PreferencesActivity"></activity>
         
-        <service android:name="WatchdogService" android:process=":auditorium_watchdog" android:icon="@drawable/ic_launcher" android:label="@string/app_name">
+        <service android:name="WatchdogService" 
+            	 android:process=":auditorium_process" 
+            	 android:icon="@drawable/ic_launcher" 
+            	 android:label="@string/app_name">
         </service>
         
-        <activity android:name=".MainActivity" android:label="@string/app_name">
+        <activity android:name=".MainActivity" 
+            	  android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <receiver android:name="ServiceStarter">
+        <receiver android:name=".ServiceStarterReceiver"
+            	  android:process=":auditorium_process">
+            <intent-filter>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name=".ServiceSetupReceiver"
+            	  android:process=":auditorium_process">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name=".InternetStateChangeReceiver"
+            	  android:process=":auditorium_process">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            	<action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
     </application>
